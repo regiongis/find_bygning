@@ -1,7 +1,13 @@
-import cv2
 import numpy as np
+import cv2
+from skimage.color import rgb2gray
+from skimage.feature import hog
 from glob import glob
 import random
+
+#<!--------------------------------------------------------------------------->
+#<!--                               DATA UTILS                              -->
+#<!--------------------------------------------------------------------------->  
 
 def extractBuildings(img, mask, size=(64,64) , buffer=10):
     """
@@ -79,6 +85,30 @@ def saveImages(img_list, path):
 def loadImages(path):
     return np.load(path)
 
+def computeHOG(images):
+    hogList = []
+    for image in images:
+        greyscale = rgb2gray(image)
+        hg = hog(
+            greyscale,
+            orientations=9, 
+            pixels_per_cell=(8, 8), 
+            cells_per_block=(3, 3) 
+        )
+        hogList.append(hg) 
+    return np.array(hogList)
+
+def evaluationMetrics(git):
+    '''
+    Calculates precision, recall and accuracy given the TP, FP, TN and FN values
+    :return: precision, recall, accuracy
+    '''
+    precision = TP / (TP + FP)
+    recall = TP / (TP + FN)
+    accuracy = (TP + TN) / (TP + TN + FP + FN)
+
+    return precision, recall, accuracy
+
 if __name__ == '__main__':
 
 
@@ -96,8 +126,8 @@ if __name__ == '__main__':
     
     buildings = extractBuildings(img, mask)
 
-    save_path = 'outputs/images/non-buildings.npy'
-    saveImages(negativeSamples, save_path)
+    save_path = 'outputs/images/buildings.npy'
+    #saveImages(buildings, save_path)
     #buildings = loadImages(save_path)
 
     # Show the input image in a OpenCV window.
