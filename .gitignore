@@ -1,2 +1,4 @@
 inputs/
 find_bygning.code-workspace
+__pycache__/
+.ipynb_checkpoints/
